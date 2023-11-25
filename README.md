@@ -6,3 +6,10 @@
 
 - Delete the variable on completion
 - Auto imports
+
+To try it out:
+
+1. npm run build on root
+2. cd into test-project
+3. npm install
+4. npm link
