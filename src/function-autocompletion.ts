@@ -1,7 +1,6 @@
 import ts from "typescript/lib/tsserverlibrary";
 import { makeLogger } from "./logger";
 import { getProxy } from "./get-proxy";
-import { argv0 } from "process";
 
 function init(modules: {
   typescript: typeof import("typescript/lib/tsserverlibrary");
