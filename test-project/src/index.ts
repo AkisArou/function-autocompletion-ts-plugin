@@ -17,5 +17,4 @@ function change(h: Human) {
   const n = changeName(h, ":D");
 }
 
-// Does not get autocompleted yet
 const changeArrow = (h: Human) => {};

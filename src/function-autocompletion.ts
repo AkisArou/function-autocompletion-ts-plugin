@@ -1,4 +1,7 @@
-import ts from "typescript/lib/tsserverlibrary";
+import ts, {
+  isArrowFunction,
+  isExpressionStatement,
+} from "typescript/lib/tsserverlibrary";
 import { makeLogger } from "./logger";
 import { getProxy } from "./get-proxy";
 
@@ -120,7 +123,7 @@ function init(modules: {
 
                       const insertText = `${functionName}(${args})`;
 
-                      prior.entries.push({
+                      return prior.entries.push({
                         kind: ts.ScriptElementKind.functionElement,
                         name: functionName,
                         sortText: "zzz",
@@ -129,6 +132,52 @@ function init(modules: {
                     }
                   });
                 }
+              });
+            }
+
+            // Arrow functions (Possibly will be slow? Because we have to check if it is a variable statement)
+            else if (ts.isVariableStatement(node)) {
+              node.forEachChild((statementChild) => {
+                statementChild.forEachChild((c) => {
+                  let functionName = "";
+
+                  c.forEachChild((arrowFunction) => {
+                    if (ts.isIdentifier(arrowFunction)) {
+                      functionName = arrowFunction.getText();
+                      return;
+                    }
+
+                    if (ts.isArrowFunction(arrowFunction)) {
+                      arrowFunction.forEachChild((c) => {
+                        if (ts.isParameter(c)) {
+                          c.forEachChild((paramChild) => {
+                            if (
+                              ts.isTypeReferenceNode(paramChild) &&
+                              paramChild.getText() === type
+                            ) {
+                              const args = arrowFunction.parameters
+                                .map((param) =>
+                                  param.type?.getText() === type
+                                    ? varName
+                                    : param.name.getText()
+                                )
+                                .join(", ");
+
+                              const insertText = `${functionName}(${args})`;
+
+                              return prior.entries.push({
+                                kind: ts.ScriptElementKind.variableElement,
+                                name: functionName,
+                                sortText: "zzz",
+                                insertText,
+                              });
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                });
               });
             }
           });
