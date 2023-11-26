@@ -114,10 +114,10 @@ function init(modules: {
                       paramChild.getText() === type
                     ) {
                       const args = node.parameters
-                        .map((param) =>
+                        .map((param, idx) =>
                           param.type?.getText() === type
                             ? varName
-                            : param.name.getText()
+                            : `\${${idx}}`
                         )
                         .join(", ");
 
@@ -126,6 +126,7 @@ function init(modules: {
                       return prior.entries.push({
                         kind: ts.ScriptElementKind.functionElement,
                         name: functionName,
+                        isSnippet: true,
                         sortText: "zzz",
                         insertText,
                       });
@@ -156,10 +157,10 @@ function init(modules: {
                               paramChild.getText() === type
                             ) {
                               const args = arrowFunction.parameters
-                                .map((param) =>
+                                .map((param, idx) =>
                                   param.type?.getText() === type
                                     ? varName
-                                    : param.name.getText()
+                                    : `\${${idx}}`
                                 )
                                 .join(", ");
 

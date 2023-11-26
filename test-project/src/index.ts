@@ -18,3 +18,5 @@ function change(h: Human) {
 }
 
 const changeArrow = (h: Human) => {};
+
+firstHuman.
