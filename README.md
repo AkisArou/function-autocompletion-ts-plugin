@@ -5,7 +5,6 @@
 ## TODO
 
 - Delete the variable on completion
-- Work on function parameters
 - Auto imports
 
 To try it out:

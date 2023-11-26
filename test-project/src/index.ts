@@ -10,3 +10,9 @@ function changeName(human: Human, name: string): Human {
 const firstHuman: Human = { name: "Adam", age: 33 };
 
 const newHuman = changeName(firstHuman, ":)");
+
+let newHumanLet = changeName(firstHuman, ":(");
+
+function change(h: Human) {
+  const n = changeName(h, ":D");
+}
