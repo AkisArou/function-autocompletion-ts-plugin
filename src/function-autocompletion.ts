@@ -128,7 +128,12 @@ function init(modules: {
                         name: functionName,
                         isSnippet: true,
                         sortText: "zzz",
+                        hasAction: true,
                         insertText,
+                        // replacementSpan: {
+                        //   start: quickInfo.textSpan.start,
+                        //   length: insertText.length,
+                        // },
                       });
                     }
                   });
@@ -171,6 +176,7 @@ function init(modules: {
                                 name: functionName,
                                 sortText: "zzz",
                                 insertText,
+                                hasAction: true,
                               });
                             }
                           });

@@ -1,4 +1,6 @@
-type Human = {
+import { importedFunction } from "./imported-function";
+
+export type Human = {
   name: string;
   age: number;
 };
@@ -19,4 +21,4 @@ function change(h: Human) {
 
 const changeArrow = (h: Human) => {};
 
-firstHuman.
+importedFunction(firstHuman);
