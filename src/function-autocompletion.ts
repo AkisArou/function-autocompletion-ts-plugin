@@ -1,7 +1,4 @@
-import ts, {
-  isArrowFunction,
-  isExpressionStatement,
-} from "typescript/lib/tsserverlibrary";
+import ts from "typescript/lib/tsserverlibrary";
 import { makeLogger } from "./logger";
 import { getProxy } from "./get-proxy";
 
@@ -189,6 +186,8 @@ function init(modules: {
             }
           });
         });
+
+      // prior.optionalReplacementSpan = quickInfo.textSpan;
 
       return prior;
     };
