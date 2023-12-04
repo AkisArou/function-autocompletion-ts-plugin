@@ -1,11 +1,15 @@
 {
-  "name": "function-autocompletion-ts-plugin",
+  "name": "function-completion-ts-plugin",
   "version": "0.0.1",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "author": "AkisArou <akisarou90@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AkisArou/function-completion-ts-plugin"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
