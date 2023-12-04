@@ -1,4 +1,4 @@
-### Typescript language service plugin for function completion for object literals like methods (Experimental)
+## Typescript language service plugin for function completion for object literals like methods (Experimental)
 
 ![Demo](./demo.gif)
 
