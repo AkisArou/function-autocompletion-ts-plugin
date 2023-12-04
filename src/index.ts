@@ -1,1 +1,1 @@
-export = require("./function-autocompletion");
+export = require("./function-completion");

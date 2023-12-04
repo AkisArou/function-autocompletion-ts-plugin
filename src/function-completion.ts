@@ -114,8 +114,7 @@ function init(modules: {
         };
 
         c.codeActions!.push({
-          commands: [],
-          description: "Gia na doume",
+          description: "",
           changes: [
             {
               isNewFile: false,
