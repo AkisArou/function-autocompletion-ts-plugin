@@ -15,11 +15,7 @@ type ReplacementAction = {
   timestamp: number;
 };
 
-const actions: Record<string, ReplacementAction> = {
-  // "fileName:position:entryName": {
-  //   replacementSpan: { from: 0, to: 10 },
-  // },
-};
+const actions: Record<string, ReplacementAction> = {};
 
 function registerActionCleanup() {
   setInterval(() => {
@@ -312,8 +308,6 @@ function init(modules: {
             }
           });
         });
-
-      // prior.optionalReplacementSpan = quickInfo.textSpan;
 
       return prior;
     };
