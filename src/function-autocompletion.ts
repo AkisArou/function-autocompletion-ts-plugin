@@ -1,6 +1,61 @@
-import ts from "typescript/lib/tsserverlibrary";
+import ts, {
+  CompletionEntryDetails,
+  ScriptElementKind,
+} from "typescript/lib/tsserverlibrary";
 import { makeLogger } from "./logger";
 import { getProxy } from "./get-proxy";
+
+type ReplacementActionSpan = {
+  start: number;
+  length: number;
+};
+
+type ReplacementAction = {
+  replacementSpan: ReplacementActionSpan;
+  timestamp: number;
+};
+
+const actions: Record<string, ReplacementAction> = {
+  // "fileName:position:entryName": {
+  //   replacementSpan: { from: 0, to: 10 },
+  // },
+};
+
+function registerActionCleanup() {
+  setInterval(() => {
+    const currentTimestamp = Date.now();
+    const allowedTimestamp = currentTimestamp - 15_000;
+
+    for (const actionIdentifier in actions) {
+      const action = actions[actionIdentifier];
+
+      if (action.timestamp < allowedTimestamp) {
+        delete actions[actionIdentifier];
+      }
+    }
+  }, 15_000);
+}
+
+registerActionCleanup();
+
+function setAction(identifier: string, span: ReplacementActionSpan) {
+  actions[identifier] = {
+    replacementSpan: span,
+    timestamp: Date.now(),
+  };
+}
+
+function makeActionIdentifier(
+  fileName: string,
+  position: number,
+  entryName: string
+) {
+  return `${fileName}:${position}:${entryName}`;
+}
+
+function getAction(identifier: string): ReplacementAction | undefined {
+  return actions[identifier];
+}
 
 function init(modules: {
   typescript: typeof import("typescript/lib/tsserverlibrary");
@@ -29,6 +84,61 @@ function init(modules: {
         type: "aliasName",
       },
     } as const;
+
+    proxy.getCompletionEntryDetails = (
+      fileName,
+      position,
+      entryName,
+      formatOptions,
+      source,
+      preferences,
+      data
+    ) => {
+      const prior = info.languageService.getCompletionEntryDetails(
+        fileName,
+        position,
+        entryName,
+        formatOptions,
+        source,
+        preferences,
+        data
+      );
+
+      const action = getAction(
+        makeActionIdentifier(fileName, position, entryName)
+      );
+
+      if (action) {
+        const c: CompletionEntryDetails = {
+          codeActions: [],
+          name: entryName,
+          kind: ScriptElementKind.functionElement,
+          displayParts: [],
+          kindModifiers: "",
+        };
+
+        c.codeActions!.push({
+          commands: [],
+          description: "Gia na doume",
+          changes: [
+            {
+              isNewFile: false,
+              fileName,
+              textChanges: [
+                {
+                  span: action.replacementSpan,
+                  newText: "",
+                },
+              ],
+            },
+          ],
+        });
+
+        return c;
+      }
+
+      return prior;
+    };
 
     proxy.getCompletionsAtPosition = (fileName, position, options) => {
       const prior = info.languageService.getCompletionsAtPosition(
@@ -120,6 +230,14 @@ function init(modules: {
 
                       const insertText = `${functionName}(${args})`;
 
+                      setAction(
+                        makeActionIdentifier(fileName, position, functionName),
+                        {
+                          start: quickInfo.textSpan.start,
+                          length: quickInfo.textSpan.length + 1,
+                        }
+                      );
+
                       return prior.entries.push({
                         kind: ts.ScriptElementKind.functionElement,
                         name: functionName,
@@ -127,10 +245,6 @@ function init(modules: {
                         sortText: "zzz",
                         hasAction: true,
                         insertText,
-                        // replacementSpan: {
-                        //   start: quickInfo.textSpan.start,
-                        //   length: insertText.length,
-                        // },
                       });
                     }
                   });
@@ -168,12 +282,24 @@ function init(modules: {
 
                               const insertText = `${functionName}(${args})`;
 
+                              setAction(
+                                makeActionIdentifier(
+                                  fileName,
+                                  position,
+                                  functionName
+                                ),
+                                {
+                                  start: quickInfo.textSpan.start,
+                                  length: quickInfo.textSpan.length + 1,
+                                }
+                              );
                               return prior.entries.push({
                                 kind: ts.ScriptElementKind.variableElement,
                                 name: functionName,
                                 sortText: "zzz",
                                 insertText,
                                 hasAction: true,
+                                // data: { dadada: ":):):)" },
                               });
                             }
                           });
